@@ -5,36 +5,6 @@ import (
 	"unicode"
 )
 
-// func InspectPhrase(s string) (char rune, count int, isComplex bool) {
-// 	runeString := []rune(s)
-// 	var length int
-
-// 	charCount := make(map[rune]int)
-
-// 	for _, char := range runeString {
-// 		if !unicode.IsLetter(char) { continue }
-
-// 		length++
-// 		charCount[char]++
-// 	}
-
-// 	if length == 0 { return }
-
-// 	for key, val := range charCount {
-// 		if val > count {
-// 			char, count = key, val
-// 		}
-// 	}
-
-// 	if count * 4 >= length {
-// 		isComplex = true
-// 	} else {
-// 		char = 0
-// 		count = 0
-// 	}
-
-//		return
-//	}
 func InspectPhrase(s string) (char rune, count int, isComplex bool) {
 	fmt.Println(s)
 
