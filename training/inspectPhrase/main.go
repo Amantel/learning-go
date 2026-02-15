@@ -8,10 +8,6 @@ import (
 func InspectPhrase(s string) (char rune, count int, isComplex bool) {
 	fmt.Println(s)
 
-	if len(s) == 0 {
-		return ' ', 0, false
-	}
-
 	runeSlice := []rune(s)
 
 	myMap := make(map[rune]int)
@@ -35,6 +31,11 @@ func InspectPhrase(s string) (char rune, count int, isComplex bool) {
 	}
 
 	fmt.Println(charFrequency, mostFrequentChar, myMap)
+
+	if validCharsLen == 0 {
+		return ' ', 0, false
+	}
+
 	if charFrequency >= validCharsLen/4 {
 		return mostFrequentChar, charFrequency, true
 	}
@@ -55,5 +56,6 @@ func main() {
 	fmt.Println(InspectPhrase("абв, абв, о"))
 	fmt.Println(InspectPhrase("гггггоооо"))
 	fmt.Println(InspectPhrase("гггггoooooo"))
+	fmt.Println(InspectPhrase("     "))
 
 }
