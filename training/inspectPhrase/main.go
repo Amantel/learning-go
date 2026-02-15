@@ -26,12 +26,7 @@ func InspectPhrase(s string) (char rune, count int, isComplex bool) {
 	myMap := make(map[rune]int)
 
 	for _, runeVal := range fixedSlice {
-		num, ok := myMap[runeVal]
-		if ok {
-			myMap[runeVal] = num + 1
-		} else {
-			myMap[runeVal] = 1
-		}
+		myMap[runeVal]++
 
 		if num+1 >= maxTargetCount {
 			isComplex = true
