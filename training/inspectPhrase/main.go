@@ -5,39 +5,72 @@ import (
 	"unicode"
 )
 
-func fixSlice(runeSlice []rune) []rune {
-	var newRuneSlice []rune
+// func InspectPhrase(s string) (char rune, count int, isComplex bool) {
+// 	runeString := []rune(s)
+// 	var length int
 
-	for _, runeValue := range runeSlice {
-		if unicode.IsLetter(runeValue) {
-			newRuneSlice = append(newRuneSlice, unicode.ToLower(runeValue))
-		}
-	}
+// 	charCount := make(map[rune]int)
 
-	return newRuneSlice
-}
+// 	for _, char := range runeString {
+// 		if !unicode.IsLetter(char) { continue }
 
+// 		length++
+// 		charCount[char]++
+// 	}
+
+// 	if length == 0 { return }
+
+// 	for key, val := range charCount {
+// 		if val > count {
+// 			char, count = key, val
+// 		}
+// 	}
+
+// 	if count * 4 >= length {
+// 		isComplex = true
+// 	} else {
+// 		char = 0
+// 		count = 0
+// 	}
+
+//		return
+//	}
 func InspectPhrase(s string) (char rune, count int, isComplex bool) {
 	fmt.Println(s)
-	runeSlice := []rune(s)
-	fixedSlice := fixSlice(runeSlice)
-	maxTargetCount := len(fixedSlice)/4 + 1
 
-	myMap := make(map[rune]int)
-
-	for _, runeVal := range fixedSlice {
-		myMap[runeVal]++
-
-		if num+1 >= maxTargetCount {
-			isComplex = true
-			count = num + 1
-			char = runeVal
-		}
+	if len(s) == 0 {
+		return ' ', 0, false
 	}
 
-	fmt.Println(maxTargetCount, myMap)
+	runeSlice := []rune(s)
 
-	return char, count, isComplex
+	myMap := make(map[rune]int)
+	var charFrequency int
+	var mostFrequentChar rune
+	var validCharsLen int
+
+	for _, runeVal := range runeSlice {
+		if !unicode.IsLetter(runeVal) {
+			continue
+		}
+		validCharsLen++
+
+		myMap[runeVal]++
+		localFrequency := myMap[runeVal]
+		if localFrequency > charFrequency {
+			charFrequency = localFrequency
+			mostFrequentChar = runeVal
+		}
+
+	}
+
+	fmt.Println(charFrequency, mostFrequentChar, myMap)
+	if charFrequency >= validCharsLen/4 {
+		return mostFrequentChar, charFrequency, true
+	}
+
+	return ' ', 0, false
+
 }
 
 func main() {
@@ -49,5 +82,8 @@ func main() {
 	fmt.Println(InspectPhrase("Жили ли ежи? Ежели ежи жили, ели ли ежи жужелиц?"))
 	fmt.Println(InspectPhrase("топот"))
 	fmt.Println(InspectPhrase("абв, абв, о"))
+	fmt.Println(InspectPhrase("абв, абв, о"))
+	fmt.Println(InspectPhrase("гггггоооо"))
+	fmt.Println(InspectPhrase("гггггoooooo"))
 
 }
