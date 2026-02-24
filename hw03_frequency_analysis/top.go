@@ -40,7 +40,7 @@ func Top10(s string) []string {
 	for word, occNumb := range words {
 		occurances = append(occurances, occ{word: word, occNumb: occNumb})
 	}
-	// fmt.Println("pre sorted occurances", occurances)
+
 	slices.SortFunc(occurances, func(a occ, b occ) int {
 		if b.occNumb == a.occNumb {
 			words := []string{a.word, b.word} // a - 0, b - 1
@@ -56,36 +56,14 @@ func Top10(s string) []string {
 		return b.occNumb - a.occNumb
 	})
 
-	minNumber := occurances[9].occNumb
 	fmt.Println("post sorted occurances", occurances)
 
 	for i, occurance := range occurances {
-		if occurance.occNumb > minNumber && i < 9 {
-			frequentWords = append(frequentWords, occurance.word)
-			continue
+		if i > 9 {
+			break
 		}
-		// надо ещё хвост лексикографически отсортировать
-		bestLastWord := getBestLastWord(i, minNumber, occurances)
-		frequentWords = append(frequentWords, bestLastWord...)
-		return frequentWords
-
+		frequentWords = append(frequentWords, occurance.word)
 	}
 
 	return frequentWords
-}
-
-func getBestLastWord(lastIndex int, minNumber int, occurances []occ) []string {
-	var tail []string
-	for i := lastIndex; true; i++ {
-		if occurances[i].occNumb != minNumber {
-			break
-		}
-		tail = append(tail, occurances[i].word)
-	}
-
-	// отсортировать лексикографически хвост
-	fmt.Println("tail", tail)
-	sort.Strings(tail)
-	fmt.Println("tail", tail)
-	return tail[0 : 10-lastIndex]
 }
