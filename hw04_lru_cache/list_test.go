@@ -1,7 +1,6 @@
 package hw04lrucache
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -20,16 +19,11 @@ func TestList(t *testing.T) {
 		l := NewList()
 
 		l.PushFront(10) // [10]
-		fmt.Printf("----list  after first add %+v\n", l)
-		//l.PushFront(20) // [10]
-		fmt.Printf("----list  after second add %+v\n", l)
-		// l.PushFront(30) // [10]
-		l.PushBack(20) // [10, 20]
-		l.PushBack(30) // [10, 20, 30]
-		fmt.Printf("----final list %+v\n", l)
+		l.PushBack(20)  // [10, 20]
+		l.PushBack(30)  // [10, 20, 30]
 		require.Equal(t, 3, l.Len())
 
-		middle := l.Front().Prev // 20
+		middle := l.Front().Next // 20
 		l.Remove(middle)         // [10, 30]
 		require.Equal(t, 2, l.Len())
 
@@ -44,7 +38,6 @@ func TestList(t *testing.T) {
 		require.Equal(t, 7, l.Len())
 		require.Equal(t, 80, l.Front().Value)
 		require.Equal(t, 70, l.Back().Value)
-		return
 		l.MoveToFront(l.Front()) // [80, 60, 40, 10, 30, 50, 70]
 		l.MoveToFront(l.Back())  // [70, 80, 60, 40, 10, 30, 50]
 
