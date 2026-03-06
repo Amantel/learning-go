@@ -79,16 +79,11 @@ func TestCache(t *testing.T) {
 		c.Set("bbb", 200)
 		c.Set("ccc", 300)
 
-		val, ok := c.Get("aaa")
-
-		require.True(t, ok)
-		require.Equal(t, val, 400)
-
+		c.Get("aaa")
 		c.Set("bbb", 999)
-		// here is too much
 		c.Set("ddd", 400)
 
-		val, ok = c.Get("aaa")
+		val, ok := c.Get("aaa")
 		require.True(t, ok)
 		require.Equal(t, val, 100)
 

@@ -3,8 +3,8 @@ package hw04lrucache
 type Key string
 
 type Cache interface {
-	Set(key Key, value interface{}) bool
-	Get(key Key) (interface{}, bool)
+	Set(key Key, value any) bool
+	Get(key Key) (any, bool)
 	Clear()
 }
 
@@ -33,10 +33,6 @@ func (cache *lruCache) Set(k Key, v any) bool {
 		}
 		return false
 	}
-	// cache.queue.Remove(foundEl)
-	// itemEl := cache.queue.PushFront(v)
-	// cache.items[k] = itemEl
-
 	foundEl.Value = newItem
 	cache.queue.MoveToFront(foundEl)
 	cache.items[k] = foundEl
@@ -54,9 +50,6 @@ func (cache *lruCache) Get(k Key) (any, bool) {
 }
 
 func (cache *lruCache) Clear() {
-	// for _, key := range cache.items {
-	// 	cache.queue.Remove(key)
-	// }
 	cache.items = make(map[Key]*ListItem, cache.capacity)
 	cache.queue = NewList()
 }
