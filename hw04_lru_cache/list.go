@@ -106,14 +106,6 @@ func (l *list) Remove(i *ListItem) {
 }
 
 func (l *list) MoveToFront(i *ListItem) {
-	// соединяем там где будет дырка
-	// if i.Next != nil {
-	// 	i.Next.Prev = i.Prev
-	// }
-	// if i.Prev != nil {
-	// 	i.Prev.Next = i.Next
-	// }
-
 	l.Remove(i)
 
 	l.PushFront(i.Value)
