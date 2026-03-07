@@ -41,7 +41,8 @@ func (cache *lruCache) Set(k Key, v any) bool {
 		lastEl := cache.queue.Back()
 		if lastEl != nil {
 			cache.queue.Remove(lastEl)
-			delete(cache.items, lastEl.Value.(*item).k)
+			it := lastEl.Value.(*item)
+			delete(cache.items, it.k)
 		}
 	}
 	return false
