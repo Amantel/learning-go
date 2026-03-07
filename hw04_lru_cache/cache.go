@@ -25,25 +25,26 @@ type item struct {
 func (cache *lruCache) Set(k Key, v any) bool {
 	cache.mu.Lock()
 	defer cache.mu.Unlock()
+
 	foundEl, ok := cache.items[k]
 
-	newItem := item{k: k, v: v}
-	if !ok {
-		itemEl := cache.queue.PushFront(newItem)
-		cache.items[k] = itemEl
-		if len(cache.items) > cache.capacity {
-			lastEl := cache.queue.Back()
-			if lastEl != nil {
-				cache.queue.Remove(lastEl)
-				delete(cache.items, lastEl.Value.(item).k)
-			}
-		}
-		return false
+	if ok {
+		foundEl.Value.(*item).v = v
+		cache.queue.MoveToFront(foundEl)
+		return true
 	}
-	foundEl.Value = newItem
-	cache.queue.MoveToFront(foundEl)
 
-	return true
+	newItem := &item{k: k, v: v}
+	itemEl := cache.queue.PushFront(newItem)
+	cache.items[k] = itemEl
+	if len(cache.items) > cache.capacity {
+		lastEl := cache.queue.Back()
+		if lastEl != nil {
+			cache.queue.Remove(lastEl)
+			delete(cache.items, lastEl.Value.(*item).k)
+		}
+	}
+	return false
 }
 
 func (cache *lruCache) Get(k Key) (any, bool) {
@@ -53,7 +54,7 @@ func (cache *lruCache) Get(k Key) (any, bool) {
 	foundEl, ok := cache.items[k]
 	if ok {
 		cache.queue.MoveToFront(foundEl)
-		return foundEl.Value.(item).v, true
+		return foundEl.Value.(*item).v, true
 	}
 	return nil, false
 }
@@ -67,6 +68,9 @@ func (cache *lruCache) Clear() {
 }
 
 func NewCache(capacity int) Cache {
+	if capacity <= 0 {
+		panic("capacity must be positive")
+	}
 
 	return &lruCache{
 		capacity: capacity,
