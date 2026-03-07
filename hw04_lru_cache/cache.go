@@ -33,14 +33,15 @@ func (cache *lruCache) Set(k Key, v any) bool {
 		cache.items[k] = itemEl
 		if len(cache.items) > cache.capacity {
 			lastEl := cache.queue.Back()
-			cache.queue.Remove(lastEl)
-			delete(cache.items, lastEl.Value.(item).k)
+			if lastEl != nil {
+				cache.queue.Remove(lastEl)
+				delete(cache.items, lastEl.Value.(item).k)
+			}
 		}
 		return false
 	}
 	foundEl.Value = newItem
 	cache.queue.MoveToFront(foundEl)
-	cache.items[k] = foundEl
 
 	return true
 }
