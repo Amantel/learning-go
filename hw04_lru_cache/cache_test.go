@@ -49,14 +49,59 @@ func TestCache(t *testing.T) {
 		require.Nil(t, val)
 	})
 
-	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+	// - на логику выталкивания элементов из-за размера очереди
+	// (например: n = 3, добавили 4 элемента - 1й из кэша вытолкнулся);
+	t.Run("purge logic 1", func(t *testing.T) {
+		c := NewCache(3)
+
+		c.Set("aaa", 100)
+		c.Set("bbb", 200)
+		c.Set("ccc", 300)
+		c.Set("ddd", 400)
+
+		val, ok := c.Get("ddd")
+		require.True(t, ok)
+		require.Equal(t, val, 400)
+
+		val, ok = c.Get("aaa")
+		require.False(t, ok)
+		require.Equal(t, val, nil)
+	})
+
+	// - на логику выталкивания давно используемых элементов
+	// (например: n = 3, добавили 3 элемента, обратились несколько раз к разным элементам:
+	// изменили значение, получили значение и пр. - добавили 4й элемент,
+	// из первой тройки вытолкнется тот элемент, что был затронут наиболее давно).
+	t.Run("purge logic 2", func(t *testing.T) {
+		c := NewCache(3)
+
+		c.Set("aaa", 100)
+		c.Set("bbb", 200)
+		c.Set("ccc", 300)
+
+		c.Get("aaa")
+		c.Set("bbb", 999)
+		c.Set("ddd", 400)
+
+		val, ok := c.Get("aaa")
+		require.True(t, ok)
+		require.Equal(t, val, 100)
+
+		val, ok = c.Get("bbb")
+		require.True(t, ok)
+		require.Equal(t, val, 999)
+
+		val, ok = c.Get("ddd")
+		require.True(t, ok)
+		require.Equal(t, val, 400)
+
+		val, ok = c.Get("ccc")
+		require.False(t, ok)
+		require.Equal(t, val, nil)
 	})
 }
 
 func TestCacheMultithreading(t *testing.T) {
-	t.Skip() // Remove me if task with asterisk completed.
-
 	c := NewCache(10)
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
