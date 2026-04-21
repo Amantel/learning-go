@@ -14,13 +14,6 @@ var (
 	ErrOffsetExceedsFileSize = errors.New("offset exceeds file size")
 )
 
-func min(a, b int64) int64 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 func Copy(fromPath, toPath string, offset, limit int64) error {
 	println("Starting vars", fromPath, toPath, offset, limit)
 
@@ -41,7 +34,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		panic(ErrOffsetExceedsFileSize)
 	}
 
-	var copyLimit = size
+	var copyLimit int64
 
 	if limit > 0 {
 		copyLimit = min(limit, size-offset)
@@ -91,7 +84,3 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 
 	return nil
 }
-
-// CHECK BYTE DIFF BETWEEN
-// go run . --from=/Users/mikhailmacherkevich/Downloads/mikhail-fnranrwpnytawhfevbbq_2026-04-15T09_16_31.615Z.webm --to=/tmp/ccc --offset=0
-// go run . --from=/Users/mikhailmacherkevich/Downloads/mikhail-fnranrwpnytawhfevbbq_2026-04-15T09_16_31.615Z.webm --to=/tmp/ccc --offset=100000000
