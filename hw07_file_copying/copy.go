@@ -15,35 +15,28 @@ var (
 )
 
 func Copy(fromPath, toPath string, offset, limit int64) error {
-	println("Starting vars", fromPath, toPath, offset, limit)
-
 	info, err := os.Stat(fromPath)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if !info.Mode().IsRegular() {
-		fmt.Println("Skipping non-regular file:", fromPath)
-		panic(ErrUnsupportedFile)
+		return ErrUnsupportedFile
 	}
 
 	size := info.Size()
-	fmt.Println("File size:", size, "bytes")
 
 	if offset > size {
-		panic(ErrOffsetExceedsFileSize)
+		return ErrOffsetExceedsFileSize
 	}
+
+	remaining := size - offset
 
 	var copyLimit int64
-
 	if limit > 0 {
-		copyLimit = min(limit, size-offset)
+		copyLimit = min(limit, remaining)
 	} else {
-		copyLimit = size - offset
-	}
-
-	if limit > size {
-		copyLimit = size
+		copyLimit = remaining
 	}
 
 	file, err := os.Open(fromPath)
@@ -52,7 +45,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	}
 	defer file.Close()
 
-	_, err = file.Seek(offset, 0)
+	_, err = file.Seek(offset, io.SeekStart)
 	if err != nil {
 		return err
 	}
@@ -61,26 +54,21 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 
 	outputFile, err := os.Create(toPath)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer outputFile.Close()
 
-	writer := outputFile
-	// writer := io.Discard // copy to void
-
 	bar := pb.Full.Start64(copyLimit)
+	defer bar.Finish()
+
 	barReader := bar.NewProxyReader(reader)
 
-	byteRead, err := io.Copy(writer, barReader)
+	written, err := io.Copy(outputFile, barReader)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	defer func() {
-		bar.Finish()
-	}()
-
-	fmt.Println("*** I wanted to copy ", copyLimit, "bytes and copied", byteRead, "bytes")
+	fmt.Println("copied:", written, "bytes")
 
 	return nil
 }
