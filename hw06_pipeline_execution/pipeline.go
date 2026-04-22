@@ -84,7 +84,7 @@ func withDone(in In, done In) In {
 			select {
 			case <-done:
 				for range in {
-				} // drain
+				}
 				return
 
 			case v, ok := <-in:
@@ -96,7 +96,7 @@ func withDone(in In, done In) In {
 				case out <- v:
 				case <-done:
 					for range in {
-					} // drain
+					}
 					return
 				}
 			}
