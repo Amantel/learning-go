@@ -33,8 +33,42 @@ func orDone(done In, in In) Out {
 
 func ExecutePipeline(in In, done In, stages ...Stage) Out {
 	out := in
+
 	for _, stage := range stages {
-		out = stage(orDone(done, out))
+		stageOut := stage(orDone(done, out))
+
+		next := make(Bi)
+
+		go func(in In, out Bi) {
+			defer close(out)
+
+			for {
+				select {
+				case <-done:
+					// ❗ ВАЖНО: продолжаем вычитывать вход, чтобы не блокировать Stage
+					for range in {
+					}
+					return
+
+				case v, ok := <-in:
+					if !ok {
+						return
+					}
+
+					select {
+					case out <- v:
+					case <-done:
+						// ❗ тоже дренируем
+						for range in {
+						}
+						return
+					}
+				}
+			}
+		}(stageOut, next)
+
+		out = next
 	}
+
 	return out
 }
